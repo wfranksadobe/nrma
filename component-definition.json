@@ -265,6 +265,36 @@
           }
         },
         {
+          "title": "Nav Help",
+          "id": "nav-help",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Nav Help",
+                  "model": "nav-help"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Nav Promo",
+          "id": "nav-promo",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Nav Promo",
+                  "model": "nav-promo"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Quote",
           "id": "quote",
           "plugins": {
@@ -424,6 +454,36 @@
                   "name": "Video",
                   "model": "video",
                   "filter": "video"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Nav Promo",
+          "id": "nav-promo",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Nav Promo",
+                  "model": "nav-promo"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Nav Help",
+          "id": "nav-help",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Nav Help",
+                  "model": "nav-help"
                 }
               }
             }

@@ -323,6 +323,60 @@
     ]
   },
   {
+    "id": "nav-help",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "help",
+        "value": "",
+        "label": "Help Content",
+        "description": "Rich text. Links in a bullet list render as text links; a link on its own line renders as a button."
+      }
+    ]
+  },
+  {
+    "id": "nav-promo",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt Text",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "headline",
+        "label": "Headline",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "backgroundColor",
+        "label": "Background Colour (hex)",
+        "description": "Hex colour code for the rounded tile background, e.g. #91BF9E",
+        "value": "#91BF9E"
+      }
+    ]
+  },
+  {
     "id": "quote",
     "fields": [
       {
@@ -613,6 +667,60 @@
         "name": "placeholder_imageAlt",
         "value": "",
         "label": "Placeholder Image Alt Text"
+      }
+    ]
+  },
+  {
+    "id": "nav-promo",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt Text",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "headline",
+        "label": "Headline",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "backgroundColor",
+        "label": "Background Colour (hex)",
+        "description": "Hex colour code for the rounded tile background, e.g. #91BF9E",
+        "value": "#91BF9E"
+      }
+    ]
+  },
+  {
+    "id": "nav-help",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "help",
+        "value": "",
+        "label": "Help Content",
+        "description": "Rich text. Links in a bullet list render as text links; a link on its own line renders as a button."
       }
     ]
   }

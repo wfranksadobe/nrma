@@ -1,0 +1,35 @@
+{
+  "definitions": [
+    {
+      "title": "Nav Help",
+      "id": "nav-help",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Nav Help",
+              "model": "nav-help"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "nav-help",
+      "fields": [
+        {
+          "component": "richtext",
+          "valueType": "string",
+          "name": "help",
+          "value": "",
+          "label": "Help Content",
+          "description": "Rich text. Links in a bullet list render as text links; a link on its own line renders as a button."
+        }
+      ]
+    }
+  ],
+  "filters": []
+}
