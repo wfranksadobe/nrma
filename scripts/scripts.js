@@ -99,6 +99,24 @@ function a11yLinks(main) {
  * Decorates the main element.
  * @param {Element} main The main element
  */
+/**
+ * Applies an author-set background colour to sections. A section-metadata row
+ * "Background | #F7F1EA" becomes data-background on the section; we set it as a
+ * custom property and flag the section so header.css / styles.css can round the
+ * top corners and overlap the previous section (colour-bleed effect).
+ * @param {Element} main
+ */
+function decorateSectionBackgrounds(main) {
+  const isHex = (v) => /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(v);
+  main.querySelectorAll(':scope > .section[data-background]').forEach((section) => {
+    const colour = (section.dataset.background || '').trim();
+    if (isHex(colour)) {
+      section.style.setProperty('--section-bg', colour);
+      section.classList.add('section-colored');
+    }
+  });
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
   // hopefully forward compatible button decoration
@@ -106,6 +124,7 @@ export function decorateMain(main) {
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
+  decorateSectionBackgrounds(main);
   decorateBlocks(main);
   // add aria-label to links
   a11yLinks(main);

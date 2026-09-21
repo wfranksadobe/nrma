@@ -138,6 +138,12 @@
             "value": "highlight"
           }
         ]
+      },
+      {
+        "component": "text",
+        "name": "background",
+        "label": "Background Colour (hex)",
+        "description": "Hex colour for the section background, e.g. #F7F1EA. The section rounds its top corners and overlaps the section above so its colour shows through the corners."
       }
     ]
   },

@@ -41,6 +41,10 @@
   --nav-height: 64px;
   --breadcrumbs-height: 34px;
   --header-height: var(--nav-height);
+
+  /* coloured section rounding + overlap */
+  --section-radius: 48px;
+  --section-overlap: 48px;
 }
 
 /* fallback fonts */
@@ -225,12 +229,25 @@ main img {
   height: auto;
 }
 
+/* content images: light rounded corners, centered (icons excluded) */
+main .section :not(.icon) > picture {
+  display: block;
+  text-align: center;
+}
+
+main .section :not(.icon) > picture img {
+  display: block;
+  margin-inline: auto;
+  border-radius: 16px;
+}
+
 .icon {
   display: inline-block;
   height: 24px;
   width: 24px;
 }
 
+/* stylelint-disable-next-line no-descending-specificity */
 .icon img {
   height: 100%;
   width: 100%;
@@ -263,4 +280,31 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+/* ===== Coloured sections with rounded top + colour-bleed overlap =====
+   Each coloured section paints its own background, rounds its top corners, and
+   pulls up over the previous section (negative top margin). The previous
+   section therefore shows through the rounded corner cut-outs. Extra top
+   padding accommodates the overlap so content isn't clipped. */
+main > .section.section-colored {
+  --section-bg: transparent;
+
+  position: relative;
+  background-color: var(--section-bg);
+  border-radius: var(--section-radius) var(--section-radius) 0 0;
+  margin: calc(var(--section-overlap) * -1) 0 0;
+  padding: calc(40px + var(--section-overlap)) 0 40px;
+}
+
+/* full-bleed background: cancel the boilerplate content max-width gutter so the
+   colour spans the viewport; inner content keeps its own max-width */
+main > .section.section-colored > div {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* first coloured section shouldn't pull up above the page top */
+main > .section.section-colored:first-of-type {
+  margin-top: 0;
 }
