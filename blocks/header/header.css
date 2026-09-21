@@ -8,16 +8,18 @@
 
 /* The two-row NRMA nav is taller than the boilerplate --header-height (64px);
    let the header grow to its content so it reserves the correct space and does
-   not overlap the page content below. */
+   not overlap the page content below. Make the header itself sticky so the nav
+   stays visible while scrolling (the wrapper can't stick inside an equal-height
+   header). */
 header {
   height: auto;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 header .nav-wrapper {
-  position: sticky;
-  top: 0;
   width: 100%;
-  z-index: 20;
   background-color: #fff;
   box-shadow: 0 1px 0 rgb(1 12 102 / 8%);
 }

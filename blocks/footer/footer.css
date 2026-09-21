@@ -10,7 +10,7 @@ footer {
   background-color: var(--footer-bg);
   color: var(--footer-fg);
   font-size: 14px;
-  border-radius: 24px 24px 0 0;
+  border-radius: 48px 48px 0 0;
 }
 
 footer .footer-content {
