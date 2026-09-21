@@ -124,6 +124,21 @@ export default async function decorate(block) {
       }
     });
     groups.forEach((g) => colsWrapper.append(g));
+
+    // Move the Connect section in as the 4th column of the same grid.
+    const connect = footer.querySelector('.footer-connect');
+    if (connect) {
+      const connectContent = connect.querySelector('.default-content-wrapper') || connect;
+      const col = document.createElement('div');
+      col.className = 'footer-column footer-connect-col';
+      while (connectContent.firstChild) col.append(connectContent.firstChild);
+      colsWrapper.append(col);
+      connect.remove();
+
+      // The top links (Log in / Contact us) render as buttons, matching source.
+      col.querySelector('ul')?.classList.add('footer-account-links');
+      col.querySelectorAll('ul.footer-account-links a').forEach((a) => a.classList.add('footer-btn'));
+    }
   }
 
   block.append(footer);

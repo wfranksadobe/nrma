@@ -42,11 +42,15 @@ footer .footer-legal {
 }
 
 /* ---- Acknowledgement ---- */
+footer .footer-ack {
+  text-align: left;
+}
+
 footer .footer-ack .footer-ack-img {
   display: block;
-  width: 200px;
+  width: 96px;
   height: auto;
-  margin-bottom: 16px;
+  margin: 0 0 16px;
 }
 
 /* ---- Link columns (multi-column grid) ---- */
@@ -80,21 +84,38 @@ footer .footer-column li {
   margin-bottom: 10px;
 }
 
-/* ---- Connect column ---- */
-footer .footer-connect {
-  margin-top: 32px;
+/* ---- Connect column (4th column of the footer grid) ---- */
+footer .footer-connect-col p {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 16px;
 }
 
-footer .footer-connect ul {
+/* Log in / Contact us render as outline buttons (matching source) */
+footer .footer-connect-col ul.footer-account-links {
   list-style: none;
   display: flex;
-  gap: 24px;
-  margin: 0 0 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 24px;
   padding: 0;
 }
 
-footer .footer-connect p {
-  font-weight: 700;
+footer .footer-connect-col a.footer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border: 1px solid var(--footer-fg);
+  border-radius: 64px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+footer .footer-connect-col a.footer-btn:hover {
+  background-color: var(--footer-fg);
+  color: var(--footer-bg);
+  text-decoration: none;
 }
 
 footer .footer-social-icon {
