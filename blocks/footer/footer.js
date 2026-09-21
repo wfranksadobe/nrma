@@ -107,6 +107,22 @@ export default async function decorate(block) {
   // Resolve all :token: images (acknowledgement, social, app stores).
   resolveIconTokens(footer);
 
+  // Acknowledgement: put the image beside (not above) the title + text.
+  // Move the image out, wrap the remaining paragraphs, lay them side by side.
+  const ackWrapper = footer.querySelector('.footer-ack .default-content-wrapper')
+    || footer.querySelector('.footer-ack');
+  const ackImg = ackWrapper && ackWrapper.querySelector('.footer-ack-img');
+  if (ackImg) {
+    const imgP = ackImg.closest('p') || ackImg;
+    const textWrap = document.createElement('div');
+    textWrap.className = 'footer-ack-text';
+    [...ackWrapper.children].forEach((el) => {
+      if (el !== imgP && el !== ackImg) textWrap.append(el);
+    });
+    ackWrapper.append(ackImg, textWrap);
+    if (imgP !== ackImg) imgP.remove();
+  }
+
   // Group each column heading + its following list in the columns section.
   const colsWrapper = footer.querySelector('.footer-columns .default-content-wrapper')
     || footer.querySelector('.footer-columns');
