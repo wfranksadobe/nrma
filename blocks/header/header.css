@@ -131,6 +131,7 @@ header nav .nav-primary-trigger {
   margin: 0;
   border: 0;
   border-bottom: 3px solid transparent;
+  border-radius: 0;
   background: transparent;
   padding: 18px 12px;
   color: var(--nrma-navy);
@@ -141,12 +142,13 @@ header nav .nav-primary-trigger {
   cursor: pointer;
 }
 
-/* Hover: shared light background highlight (matches source) */
-header nav .nav-primary-trigger:hover {
+/* Hover: shared light background highlight (rectangular, matches source) */
+header nav .nav-primary-trigger:hover,
+header nav .nav-primary-trigger[aria-expanded='true'] {
   background-color: rgb(3 57 139 / 10%);
 }
 
-/* Selected / open: underlined while its megamenu is open */
+/* Selected / open: shading (above) plus underline while its megamenu is open */
 header nav .nav-primary-trigger[aria-expanded='true'] {
   border-bottom-color: var(--nrma-navy);
 }

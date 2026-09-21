@@ -162,6 +162,18 @@ export default async function decorate(block) {
         help = helpBlocks[helpIdx] || null;
       }
 
+      // Secondary nav links must render as plain text links, not buttons.
+      // On EDS/JCR, a lone link in a cell gets auto-decorated as class="button"
+      // (wrapped in .button-container); strip that so headings match the source.
+      if (secondaryList) {
+        secondaryList.querySelectorAll('a').forEach((a) => {
+          a.classList.remove('button', 'primary', 'secondary');
+        });
+        secondaryList.querySelectorAll('.button-container').forEach((c) => {
+          c.classList.remove('button-container');
+        });
+      }
+
       // Build the panel; move the secondary list into it.
       const panel = buildPanel(secondaryList, promo, help);
 
