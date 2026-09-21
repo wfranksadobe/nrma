@@ -61,7 +61,7 @@ export default function parse(element, { document }) {
 
   const promoCells = [
     ['half'],
-    ['#1F4F9E'],
+    ['#27307D'],
     [fieldCell('text', ...promoText)],
   ];
   const promoBlock = WebImporter.Blocks.createBlock(document, { name: 'promo', cells: promoCells });
