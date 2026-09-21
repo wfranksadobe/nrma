@@ -161,14 +161,15 @@ footer .footer-bottom li {
   font-size: 13px;
 }
 
-/* Acknowledgement paragraph emphasis (after generic p rules for specificity order) */
-footer .footer-ack p:nth-of-type(2) {
+/* Acknowledgement text: first paragraph is the bold heading, second is body */
+footer .footer-ack .footer-ack-text p:first-child {
   font-weight: 700;
   font-size: 16px;
 }
 
-footer .footer-ack p:last-child {
+footer .footer-ack .footer-ack-text p:last-child {
   max-width: 900px;
+  font-weight: 400;
   opacity: 0.9;
 }
 
