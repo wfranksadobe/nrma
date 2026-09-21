@@ -6,6 +6,13 @@
   --nav-max-width: 1264px;
 }
 
+/* The two-row NRMA nav is taller than the boilerplate --header-height (64px);
+   let the header grow to its content so it reserves the correct space and does
+   not overlap the page content below. */
+header {
+  height: auto;
+}
+
 header .nav-wrapper {
   position: sticky;
   top: 0;
