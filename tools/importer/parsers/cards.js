@@ -1,0 +1,153 @@
+/* eslint-disable */
+/* global WebImporter */
+/**
+ * Parser for variant: cards  (base block: cards, container block)
+ * Source: https://www.nrma.com.au/  — runs on section containers
+ *   ".cmp-container--background-primary-colour" (promo offer cards) and
+ *   ".cmp-container--background-neutral-colour" (product cards, why-choose callouts, blog cards).
+ * Library convention: container block, zero-to-N children; each card = ONE row with 2 cells:
+ *   cell 1 = image/icon (model fields image + imageAlt), cell 2 = text (richtext) holding
+ *   title/description/CTA. An image cell may be empty but MUST still be included.
+ * Handles four visual treatments robustly (promo sidekick, product grid, leaf callout, blog article).
+ * Generated for NRMA homepage migration.
+ */
+export default function parse(element, { document }) {
+  const fieldCell = (fieldName, ...nodes) => {
+    const frag = document.createDocumentFragment();
+    frag.appendChild(document.createComment(` field:${fieldName} `));
+    nodes.filter(Boolean).forEach((n) => frag.appendChild(n));
+    return frag;
+  };
+
+  const textOf = (el) => (el ? el.textContent.replace(/\s+/g, ' ').trim() : '');
+
+  // --- 1. Collect candidate card items across the four treatments. ---
+  const candidates = [];
+  const push = (nodes) => nodes.forEach((n) => { if (!candidates.includes(n)) candidates.push(n); });
+
+  push(Array.from(element.querySelectorAll('.cmp-bento__sidekick')));            // promo offer cards
+  push(Array.from(element.querySelectorAll('.cmp-article-preview-list__item'))); // blog cards
+  push(Array.from(element.querySelectorAll('.cmp-call-out')));                   // why-choose callouts
+  // product cards: grid items carrying a product link-list + a heading
+  Array.from(element.querySelectorAll('.grid-container__item')).forEach((item) => {
+    if (item.querySelector('.cmp-iag-list a[href]') && item.querySelector('h2, h3, h4, .cmp-title__text')) {
+      push([item]);
+    }
+  });
+
+  // Drop candidates nested inside another candidate (avoid double capture),
+  // then restore source (document) order so cards read top-to-bottom as authored.
+  const cards = candidates
+    .filter((c) => !candidates.some((o) => o !== c && o.contains(c)))
+    .sort((a, b) => {
+      const pos = a.compareDocumentPosition(b);
+      if (pos & 0x02) return 1;  // a follows b (Node.DOCUMENT_POSITION_PRECEDING)
+      if (pos & 0x04) return -1; // a precedes b (Node.DOCUMENT_POSITION_FOLLOWING)
+      return 0;
+    });
+
+  if (!cards.length) {
+    element.replaceWith(...element.childNodes);
+    return;
+  }
+
+  // --- 2. Build a 2-cell row per card. ---
+  const cells = [];
+
+  cards.forEach((card) => {
+    // image: first real raster image (skip decorative inline data-URI pictograms when a real one exists)
+    const imgs = Array.from(card.querySelectorAll('img'));
+    const image = imgs.find((i) => i.getAttribute('src') && !i.getAttribute('src').startsWith('data:')) || imgs[0] || null;
+
+    // body pieces, assembled in reading order into the single richtext "text" field
+    const body = [];
+
+    const date = card.querySelector('.cmp-article-preview-list__date');
+    const category = card.querySelector('.cmp-article-preview-list__category');
+    if (date || category) {
+      const meta = document.createElement('p');
+      meta.textContent = [textOf(date), textOf(category)].filter(Boolean).join(' — ');
+      body.push(meta);
+    }
+
+    const heading = card.querySelector(
+      '.cmp-call-out__title, .cmp-article-preview-list__title, .cmp-bento__sidekick__content h2, .cmp-title__text, h2, h3, h4',
+    );
+    if (heading) {
+      const level = /^h[1-6]$/i.test(heading.tagName) ? heading.tagName.toLowerCase() : 'h3';
+      const h = document.createElement(level);
+      h.textContent = textOf(heading);
+      body.push(h);
+    }
+
+    // descriptive copy
+    const descSelectors = '.cmp-call-out__description, .cmp-article-preview-list__description, .cmp-text p, .cmp-bento__sidekick__content > p';
+    const descs = Array.from(card.querySelectorAll(descSelectors));
+    (descs.length ? descs : Array.from(card.querySelectorAll(':scope > p'))).forEach((d) => {
+      const p = document.createElement('p');
+      p.textContent = textOf(d);
+      if (p.textContent) body.push(p);
+    });
+
+    // promo code (offer cards) — surface as text so nothing is lost
+    const promoCard = card.querySelector('.copypromocode');
+    if (promoCard) {
+      const codeVal = textOf(promoCard.querySelector('.default'));
+      if (codeVal) {
+        const p = document.createElement('p');
+        p.textContent = `Promo code: ${codeVal}`;
+        body.push(p);
+      }
+    }
+
+    // product link list → real anchor list
+    const listLinks = Array.from(card.querySelectorAll('.cmp-iag-list a[href]'));
+    if (listLinks.length) {
+      const ul = document.createElement('ul');
+      listLinks.forEach((a) => {
+        const li = document.createElement('li');
+        const na = document.createElement('a');
+        na.setAttribute('href', a.getAttribute('href'));
+        na.textContent = textOf(a);
+        li.appendChild(na);
+        ul.appendChild(li);
+      });
+      body.push(ul);
+    }
+
+    // CTA buttons/links (exclude the promo-code copy button which has no href)
+    const ctaLinks = Array.from(card.querySelectorAll('a.cmp-button[href], .cmp-button a[href], .cmp-article-preview-list__button-container a[href], .buttongroup a[href]'));
+    // Dedup by element identity (overlapping selectors), not href, so distinct CTAs survive.
+    const seenHref = new Set();
+    ctaLinks.forEach((a) => {
+      const href = a.getAttribute('href');
+      if (!href || seenHref.has(a)) return;
+      seenHref.add(a);
+      const p = document.createElement('p');
+      const na = document.createElement('a');
+      na.setAttribute('href', href);
+      na.textContent = textOf(a) || 'Learn more';
+      p.appendChild(na);
+      body.push(p);
+    });
+
+    // blog tags
+    const tags = Array.from(card.querySelectorAll('.cmp-article-preview-list__tag'));
+    if (tags.length) {
+      const p = document.createElement('p');
+      p.textContent = tags.map((t) => textOf(t)).filter(Boolean).join(', ');
+      if (p.textContent) body.push(p);
+    }
+
+    // 2 cells: image (optional → empty cell, no hint) + text (richtext, hinted).
+    let imageCell = '';
+    if (image) {
+      if (!image.getAttribute('alt')) image.setAttribute('alt', '');
+      imageCell = fieldCell('image', image);
+    }
+    cells.push([imageCell, fieldCell('text', ...body)]);
+  });
+
+  const block = WebImporter.Blocks.createBlock(document, { name: 'cards', cells });
+  element.replaceWith(block);
+}

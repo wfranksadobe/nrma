@@ -11,3 +11,6 @@ localhost.pem
 localhost-key.pem
 migration-work/navigation-validation/
 migration-work/footer-validation/
+tools/importer/bd-snapshots/
+tools/importer/reports/
+tools/importer/*.bundle.js

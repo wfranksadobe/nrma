@@ -1,0 +1,92 @@
+{
+  "templates": [
+    {
+      "name": "home",
+      "urls": [
+        "https://www.nrma.com.au/"
+      ],
+      "representativeUrl": "https://www.nrma.com.au/",
+      "description": "NRMA homepage — main content sections (nav + footer excluded).",
+      "blocks": [
+        {
+          "name": "hero",
+          "instances": [
+            ".cmp-container--background-primary-colour"
+          ]
+        },
+        {
+          "name": "cards",
+          "instances": [
+            ".cmp-container--background-primary-colour",
+            ".cmp-container--background-neutral-colour"
+          ]
+        },
+        {
+          "name": "columns",
+          "instances": [
+            ".cmp-container--background-neutral-colour",
+            ".cmp-container--background-secondary-colour"
+          ]
+        }
+      ],
+      "urlPattern": "/",
+      "sections": [
+        {
+          "id": "sec1",
+          "name": "Hero + promo offers",
+          "selector": [
+            ".cmp-container--background-primary-colour"
+          ],
+          "style": "#010C66",
+          "blocks": [
+            "hero",
+            "cards"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "sec2",
+          "name": "Insurance products + existing customers + why choose",
+          "selector": [
+            ".cmp-container--background-neutral-colour.cmp-container--has-overlap:nth-of-type(2)",
+            ".cmp-container--background-neutral-colour:nth-of-type(2)"
+          ],
+          "style": "#F7F1EA",
+          "blocks": [
+            "cards",
+            "columns"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "sec3",
+          "name": "Home loans band",
+          "selector": [
+            ".cmp-container--background-secondary-colour"
+          ],
+          "style": "#D7D667",
+          "blocks": [
+            "columns"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "sec4",
+          "name": "Blog cards + disclaimers",
+          "selector": [
+            ".cmp-container--background-neutral-colour.cmp-container--has-overlap:nth-of-type(4)",
+            ".cmp-container--background-neutral-colour:nth-of-type(4)"
+          ],
+          "style": "#F7F1EA",
+          "blocks": [
+            "cards"
+          ],
+          "defaultContent": []
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "projectType": "xwalk"
+  }
+}

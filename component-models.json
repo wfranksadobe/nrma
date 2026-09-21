@@ -383,6 +383,43 @@
     ]
   },
   {
+    "id": "promo",
+    "fields": [
+      {
+        "component": "select",
+        "name": "layout",
+        "label": "Layout",
+        "value": "half",
+        "options": [
+          {
+            "name": "Half width",
+            "value": "half"
+          },
+          {
+            "name": "Full width",
+            "value": "full"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "backgroundColor",
+        "label": "Background Colour (hex)",
+        "description": "Hex colour for the promo panel background, e.g. #010C66",
+        "value": "#010C66"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "value": "",
+        "label": "Text",
+        "description": "Title, copy, and a bullet list for the tiles. Tile icons use :token: syntax, e.g. :car:, :home:, :business_insurance:, :CTP:"
+      }
+    ]
+  },
+  {
     "id": "quote",
     "fields": [
       {

@@ -10,7 +10,8 @@
       "aemSiteName": "nrma",
       "aemSiteTitle": "NRMA",
       "libraryUrl": "https://main--sta-xwalk-boilerplate--aemysites.aem.page/tools/sidekick/library.json",
-      "baseUrl": "https://www.nrma.com.au/"
+      "baseUrl": "https://www.nrma.com.au/",
+      "botProtected": true
     }
   }
 }
