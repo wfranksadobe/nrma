@@ -4,7 +4,7 @@ import { loadFragment } from '../fragment/fragment.js';
 // with its stored repo image. Social/app tokens live inside <a> links in the
 // content, so authors control the destination URL from the content.
 const ICON_TOKENS = {
-  Acknowledgement: { src: '/icons/acknowledgement.webp', alt: 'Acknowledgement of Country', cls: 'footer-ack-img' },
+  Acknowledgement: { src: '/icons/acknowledgement.png', alt: 'Acknowledgement of Country', cls: 'footer-ack-img' },
   facebook: { src: '/icons/facebook.svg', alt: 'Facebook', cls: 'footer-social-icon' },
   instagram: { src: '/icons/instagram.svg', alt: 'Instagram', cls: 'footer-social-icon' },
   x: { src: '/icons/x.svg', alt: 'X', cls: 'footer-social-icon' },
@@ -16,14 +16,43 @@ const ICON_TOKENS = {
 
 const TOKEN_RE = /:([A-Za-z0-9_]+):/g;
 
+// Case-insensitive lookup: EDS lowercases icon names (:Acknowledgement: ->
+// icon-acknowledgement), so match tokens regardless of case.
+const TOKEN_BY_LOWER = Object.fromEntries(
+  Object.entries(ICON_TOKENS).map(([k, v]) => [k.toLowerCase(), v]),
+);
+
+/** Build the sized image element for a token definition. */
+function buildIconImg(def, base) {
+  const img = document.createElement('img');
+  img.src = `${base}${def.src}`;
+  img.alt = def.alt;
+  img.loading = 'lazy';
+  img.className = def.cls;
+  return img;
+}
+
 /**
- * Replace :token: text with its image. Works on text nodes so tokens inside
- * links (social/app icons) keep their surrounding <a>. codeBasePath prefixes
- * the icon src so it resolves on localhost and DA/EDS.
+ * Resolve footer icon tokens to their repo images. Handles BOTH forms:
+ *  1. already-decorated `span.icon.icon-<name>` — how the EDS/DA pipeline
+ *     serves `:token:` (helix converts the text, decorateIcons adds a 16px img).
+ *  2. raw `:token:` text in a text node — localhost / aem up.
+ * Either way we emit the same correctly-sized, correctly-sourced image so the
+ * footer looks identical on localhost and on the EDS instance.
  * @param {Element} root the footer root
  */
 function resolveIconTokens(root) {
   const base = window.hlx && window.hlx.codeBasePath ? window.hlx.codeBasePath : '';
+
+  // 1) Replace pre-decorated icon spans (EDS instance).
+  root.querySelectorAll('span.icon').forEach((span) => {
+    const iconClass = [...span.classList].find((c) => c.startsWith('icon-'));
+    if (!iconClass) return;
+    const def = TOKEN_BY_LOWER[iconClass.slice(5).toLowerCase()];
+    if (def) span.replaceWith(buildIconImg(def, base));
+  });
+
+  // 2) Replace raw :token: text (localhost).
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const textNodes = [];
   while (walker.nextNode()) {
@@ -38,15 +67,10 @@ function resolveIconTokens(root) {
     TOKEN_RE.lastIndex = 0;
     // eslint-disable-next-line no-cond-assign
     while ((m = TOKEN_RE.exec(text)) !== null) {
-      const def = ICON_TOKENS[m[1]];
+      const def = TOKEN_BY_LOWER[m[1].toLowerCase()];
       if (def) {
         if (m.index > last) frag.append(document.createTextNode(text.slice(last, m.index)));
-        const img = document.createElement('img');
-        img.src = `${base}${def.src}`;
-        img.alt = def.alt;
-        img.loading = 'lazy';
-        img.className = def.cls;
-        frag.append(img);
+        frag.append(buildIconImg(def, base));
         last = m.index + m[0].length;
       }
     }

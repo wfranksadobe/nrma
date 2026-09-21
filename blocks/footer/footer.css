@@ -49,12 +49,11 @@ footer .footer-ack .footer-ack-img {
   margin-bottom: 16px;
 }
 
-/* ---- Link columns + connect (4-up grid on desktop) ---- */
-footer .footer-columns .default-content-wrapper,
-footer .footer-connect .default-content-wrapper {
-  display: block;
-}
+/* ---- Link columns (multi-column grid) ---- */
 
+/* Grid on the section; any intermediate .default-content-wrapper is flattened
+   with display:contents so the .footer-column groups (built in footer.js) are
+   the direct grid items regardless of how EDS wraps the section. */
 footer .footer-columns {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
