@@ -74,6 +74,12 @@ export default async function decorate(block) {
   const sections = [...footer.querySelectorAll(':scope > .section')];
   sections.forEach((sec, i) => { if (sectionClasses[i]) sec.classList.add(sectionClasses[i]); });
 
+  // Footer links are plain links, never buttons. EDS auto-decorates a lone link
+  // in a cell as class="button" (wrapped in .button-container) — strip that so
+  // app-store / social icon links render without a coloured button pill.
+  footer.querySelectorAll('a.button').forEach((a) => a.classList.remove('button', 'primary', 'secondary'));
+  footer.querySelectorAll('.button-container').forEach((c) => c.classList.remove('button-container'));
+
   // Resolve all :token: images (acknowledgement, social, app stores).
   resolveIconTokens(footer);
 
