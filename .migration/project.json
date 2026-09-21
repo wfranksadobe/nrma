@@ -1,0 +1,16 @@
+{
+  "type": "xwalk",
+  "sites": {
+    "nrma": {
+      "previewOrg": "wfranksadobe",
+      "previewSite": "nrma",
+      "contentHostUrl": "author-p154716-e1630108.adobeaemcloud.com",
+      "aemSitePath": "/content/nrma",
+      "aemAssetsFolderPath": "/content/dam/nrma",
+      "aemSiteName": "nrma",
+      "aemSiteTitle": "NRMA",
+      "libraryUrl": "https://main--sta-xwalk-boilerplate--aemysites.aem.page/tools/sidekick/library.json",
+      "baseUrl": "https://www.nrma.com.au/"
+    }
+  }
+}
