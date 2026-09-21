@@ -141,7 +141,12 @@ header nav .nav-primary-trigger {
   cursor: pointer;
 }
 
-header nav .nav-primary-trigger:hover,
+/* Hover: shared light background highlight (matches source) */
+header nav .nav-primary-trigger:hover {
+  background-color: rgb(3 57 139 / 10%);
+}
+
+/* Selected / open: underlined while its megamenu is open */
 header nav .nav-primary-trigger[aria-expanded='true'] {
   border-bottom-color: var(--nrma-navy);
 }

@@ -20,9 +20,11 @@
   font-weight: 700;
 }
 
-/* Extra separation before a heading that follows the text-link list */
+/* White divider separating the two sections (before the 2nd heading) */
 .nav-help ul + p:not(:has(a)) {
-  margin-top: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #fff;
 }
 
 .nav-help ul {
