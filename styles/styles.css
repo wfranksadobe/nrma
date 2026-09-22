@@ -304,7 +304,12 @@ main > .section.section-colored > div {
   margin: auto;
 }
 
-/* first coloured section shouldn't pull up above the page top */
+/* first coloured section shouldn't pull up above the page top: no overlap to
+   accommodate, so use a smaller top padding. Its bottom padding must survive
+   the next section pulling up over it (negative --section-overlap), so add the
+   overlap back on so ~40px of real bottom padding remains visible. */
 main > .section.section-colored:first-of-type {
   margin-top: 0;
+  padding-top: 40px;
+  padding-bottom: calc(40px + var(--section-overlap));
 }

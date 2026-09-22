@@ -1,0 +1,206 @@
+.tile {
+  --tile-bg: #91bf9e;
+
+  display: grid;
+  grid-template-columns: 1fr 35%;
+  align-items: stretch;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background-color: var(--tile-bg);
+  overflow: hidden;
+  color: #010c66;
+  font-family: 'Help Type Text Web', helvetica, arial, sans-serif;
+}
+
+/* ---- left: content ---- (source padding 16px 32px 32px, gap 12px) */
+.tile .tile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  box-sizing: border-box;
+  padding: 10px 32px 24px;
+}
+
+.tile .tile-content > * {
+  flex: 0 0 auto;
+}
+
+.tile .tile-heading {
+  margin: 0;
+
+  /* match source offer heading (.h4): Help Type Display, 24px, medium */
+  font-family: 'Help Type Display Web', helvetica, arial, sans-serif;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #010c66;
+}
+
+.tile .tile-text {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.tile .tile-text p {
+  margin: 0 0 12px;
+}
+
+.tile .tile-text a:any-link {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* promo-code copy chip */
+.tile .tile-promo-label {
+  margin-right: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.tile .tile-promo-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  vertical-align: middle;
+  padding: 6px 12px;
+  border: 1px solid rgb(1 12 102 / 20%);
+  border-radius: 8px;
+  background-color: transparent;
+  color: #010c66;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tile .tile-promo-code:hover {
+  background-color: rgb(1 12 102 / 6%);
+}
+
+.tile .tile-promo-code-value {
+  letter-spacing: 0.02em;
+}
+
+.tile .tile-promo-code-icon {
+  width: 16px;
+  height: 16px;
+  background-color: currentcolor;
+  mask: url('/icons/copy.svg') center / contain no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.tile .tile-promo-code-copied::after {
+  content: 'Copied';
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.tile .tile-promo-code-copied .tile-promo-code-icon {
+  display: none;
+}
+
+/* actions row: primary pill + secondary text link, pinned to the bottom */
+.tile .tile-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  /* pin to the bottom-left; the content's left/bottom padding provides the gap */
+  margin-top: auto;
+}
+
+/* CTA — navy pill */
+.tile .tile-cta:any-link {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 999px;
+  background-color: #010c66;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tile .tile-cta:any-link:hover {
+  background-color: #1b2a8a;
+}
+
+/* secondary link — underlined text link */
+.tile .tile-cta-secondary:any-link {
+  color: #010c66;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.tile .tile-cta-secondary:any-link:hover {
+  text-decoration: none;
+}
+
+/* ---- right: image (centered in its allocated area) ---- */
+.tile .tile-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.tile .tile-media picture,
+.tile .tile-media img {
+  display: block;
+  width: 100%;
+  height: 95%;
+
+  /* fill 95% of the tile height; crop left/right if needed */
+  object-fit: cover;
+  object-position: center;
+}
+
+/* stack on small screens */
+@media (width < 700px) {
+  .tile {
+    grid-template-columns: 1fr;
+  }
+
+  .tile .tile-media {
+    min-height: 200px;
+    order: -1;
+  }
+}
+
+/*
+ * Two tiles stacked in a columns cell (homepage top section RHS). The RHS
+ * column matches the LHS promo panel's height exactly: the LHS drives the row
+ * height (the tiles use flex-basis 0 so they contribute ~no intrinsic height),
+ * and the two tiles split the available height equally — so combined tiles +
+ * gap == LHS height, without changing the LHS.
+ */
+@media (width >= 900px) {
+  .columns > div:has(.tile-wrapper) {
+    align-items: stretch;
+  }
+
+  .columns > div > div:has(> .tile-wrapper) {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .columns > div > div > .tile-wrapper {
+    display: flex;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .columns > div > div > .tile-wrapper > .tile {
+    flex: 1;
+    min-height: 0;
+  }
+}

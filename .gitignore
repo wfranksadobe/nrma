@@ -14,3 +14,4 @@ migration-work/footer-validation/
 tools/importer/bd-snapshots/
 tools/importer/reports/
 tools/importer/*.bundle.js
+.migration/

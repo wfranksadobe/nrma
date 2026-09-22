@@ -47,13 +47,38 @@ export default function parse(element, { document }) {
     promoText.push(p);
   }
   if (tiles.length) {
+    // Fallback quote targets for tiles whose source CTA opens a JS modal
+    // (no href). Keeps links pointing at source-site absolute URLs.
+    const quoteHref = {
+      car: 'https://www.nrma.com.au/car-insurance',
+      home: 'https://www.nrma.com.au/home-insurance',
+      business_insurance: 'https://www.nrma.com.au/business-insurance',
+      CTP: 'https://www.nrma.com.au/ctp-insurance',
+    };
     const ul = document.createElement('ul');
     tiles.forEach((tile) => {
       const name = tile.querySelector('.cmp-bento__action__card__name');
       const label = textOf(name) || textOf(tile);
       const token = tileToken(label);
+      // source CTA — a real link if present, else the modal button label
+      const cta = tile.querySelector('a[href]');
+      const ctaLabel = textOf(cta) || textOf(tile.querySelector('button, .cmp-button')) || 'Get a quote';
+      const href = (cta && cta.getAttribute('href')) || (token && quoteHref[token]) || '#';
+
+      // 3 stacked rows per tile: icon, title, button
       const li = document.createElement('li');
-      li.textContent = token ? `:${token}: ${label}` : label;
+      const iconP = document.createElement('p');
+      iconP.textContent = token ? `:${token}:` : '';
+      const titleP = document.createElement('p');
+      titleP.textContent = label;
+      const btnP = document.createElement('p');
+      const a = document.createElement('a');
+      a.setAttribute('href', href);
+      a.textContent = ctaLabel;
+      btnP.appendChild(a);
+      if (token) li.appendChild(iconP);
+      li.appendChild(titleP);
+      li.appendChild(btnP);
       ul.appendChild(li);
     });
     promoText.push(ul);
@@ -66,55 +91,105 @@ export default function parse(element, { document }) {
   ];
   const promoBlock = WebImporter.Blocks.createBlock(document, { name: 'promo', cells: promoCells });
 
-  // ---------- RIGHT: Cards block (the 2 offer cards) ----------
+  // ---------- RIGHT: one Tile block per offer card ----------
+  // Source offer cards carry a bg utility class (bg-accent / bg-secondary);
+  // map those to brand hex tints for the tile background (adjustable later).
+  const bgForCard = (card) => {
+    // the bg utility class sits on the .sidekick wrapper, not the inner card
+    const wrap = card.closest('.sidekick') || card.parentElement || card;
+    const cls = `${wrap.className} ${card.className}`;
+    if (/bg-secondary/.test(cls)) return '#D7D667'; // brand lime
+    if (/bg-accent/.test(cls)) return '#91BF9E'; // brand sage green
+    return '#91BF9E';
+  };
+
+  // Read an element's text with disclaimer superscripts (e.g. "6", "1") removed.
+  const textNoSup = (el) => {
+    if (!el) return '';
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll('sup').forEach((s) => s.remove());
+    return clone.textContent.replace(/\s+/g, ' ').trim();
+  };
+
   const sidekicks = Array.from(element.querySelectorAll('.cmp-bento__sidekick'));
-  const cardCells = [];
-  sidekicks.forEach((card) => {
+  const tileBlocks = sidekicks.map((card) => {
+    // heading (drop the disclaimer superscript number)
+    const h = card.querySelector('h2, h3, .cmp-bento__sidekick__content h2');
+    const heading = textNoSup(h);
+
+    // text (rich) — description paragraphs, plus the promo code wrapped in pipes
+    const textNodes = [];
+    Array.from(card.querySelectorAll('.cmp-bento__sidekick__content > p, .cmp-text p')).forEach((d) => {
+      const t = textNoSup(d);
+      if (t) {
+        const p = document.createElement('p');
+        p.textContent = t;
+        textNodes.push(p);
+      }
+    });
+    // Promo code lives in the copy-button's data-code attribute.
+    const codeBtn = card.querySelector('.cmp-copy-promo-code__button[data-code], [data-code]');
+    const codeText = codeBtn ? (codeBtn.getAttribute('data-code') || '').trim() : '';
+    if (codeText) {
+      // |CODE| triggers the Tile block's one-click copy chip
+      const p = document.createElement('p');
+      p.textContent = `|${codeText}|`;
+      textNodes.push(p);
+    }
+
+    // Buttons on the card. A "primary" button is a solid pill (quote/offer);
+    // a "secondary" button is a link-style CTA (data-cmp-button-type=linkStyle).
+    // Skip disclaimer superscripts (#…) and the promo-code copy button.
+    const buttons = Array.from(card.querySelectorAll('a.cmp-button[href], .buttongroup a[href], .button a[href]'))
+      .filter((a) => {
+        const href = a.getAttribute('href') || '';
+        return href && !href.startsWith('#') && !a.closest('.cmp-copy-promo-code');
+      });
+    const isLinkStyle = (a) => a.getAttribute('data-cmp-button-type') === 'linkStyle'
+      || a.closest('.cmp-button--link');
+    const primaryBtn = buttons.find((a) => !isLinkStyle(a)) || null;
+    const secondaryBtn = buttons.find((a) => isLinkStyle(a) && a !== primaryBtn) || null;
+
+    const primaryText = textOf(primaryBtn);
+    const primaryHref = primaryBtn ? (primaryBtn.getAttribute('href') || '#') : '#';
+    const secondaryText = textOf(secondaryBtn);
+    const secondaryHref = secondaryBtn ? (secondaryBtn.getAttribute('href') || '#') : '#';
+
+    // image
     const imgs = Array.from(card.querySelectorAll('img'));
     const image = imgs.find((i) => i.getAttribute('src') && !i.getAttribute('src').startsWith('data:')) || imgs[0] || null;
-    const body = [];
-    const h = card.querySelector('h2, h3, .cmp-bento__sidekick__content h2');
-    if (h) {
-      const hh = document.createElement('h3');
-      hh.textContent = textOf(h);
-      body.push(hh);
-    }
-    Array.from(card.querySelectorAll('.cmp-bento__sidekick__content > p, .cmp-text p')).forEach((d) => {
-      const p = document.createElement('p');
-      p.textContent = textOf(d);
-      if (p.textContent) body.push(p);
-    });
-    const code = card.querySelector('.cmp-copy-promo-code__code, .default');
-    if (code && textOf(code)) {
-      const p = document.createElement('p');
-      p.textContent = `Promo code: ${textOf(code)}`;
-      body.push(p);
-    }
-    const ctas = Array.from(card.querySelectorAll('a.cmp-button[href], .cmp-button a[href], .buttongroup a[href]'));
-    const seen = new Set();
-    ctas.forEach((a) => {
-      if (seen.has(a) || !a.getAttribute('href')) return;
-      seen.add(a);
-      const p = document.createElement('p');
-      const na = document.createElement('a');
-      na.setAttribute('href', a.getAttribute('href'));
-      na.textContent = textOf(a) || 'Learn more';
-      p.appendChild(na);
-      body.push(p);
-    });
-    let imageCell = '';
-    if (image) {
-      if (!image.getAttribute('alt')) image.setAttribute('alt', '');
-      imageCell = fieldCell('image', image);
-    }
-    cardCells.push([imageCell, fieldCell('text', ...body)]);
-  });
-  const cardsBlock = WebImporter.Blocks.createBlock(document, { name: 'cards', cells: cardCells });
+    if (image && !image.getAttribute('alt')) image.setAttribute('alt', '');
+    const imageAlt = image ? (image.getAttribute('alt') || '') : '';
 
-  // ---------- WRAP: columns block [ promo | cards ] ----------
+    const primaryLink = document.createElement('a');
+    primaryLink.setAttribute('href', primaryHref);
+    primaryLink.textContent = primaryHref;
+    const secondaryLink = document.createElement('a');
+    secondaryLink.setAttribute('href', secondaryHref);
+    secondaryLink.textContent = secondaryHref;
+
+    const cells = [
+      [heading],
+      [fieldCell('text', ...textNodes)],
+      [primaryText],
+      [primaryText ? primaryLink : ''],
+      [secondaryText],
+      [secondaryText ? secondaryLink : ''],
+      [image ? fieldCell('image', image) : ''],
+      [imageAlt],
+      [bgForCard(card)],
+    ];
+    return WebImporter.Blocks.createBlock(document, { name: 'tile', cells });
+  });
+
+  // Stack the two tiles vertically in the right column.
+  const rightCol = document.createElement('div');
+  tileBlocks.forEach((t) => rightCol.appendChild(t));
+
+  // ---------- WRAP: columns block [ promo | tiles ] ----------
   const columns = WebImporter.Blocks.createBlock(document, {
     name: 'columns',
-    cells: [[promoBlock, cardsBlock]],
+    cells: [[promoBlock, rightCol]],
   });
 
   element.replaceWith(columns);
