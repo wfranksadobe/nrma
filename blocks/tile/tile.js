@@ -97,17 +97,32 @@ export default function decorate(block) {
   // local plain.html (imageAlt folded onto the <img>) and the AEM/JCR render
   // (imageAlt as its own row). Robust to both.
   const rows = [...block.children];
+
+  // AEM may deliver a hex value auto-linked as a URL fragment (e.g.
+  // <a href=".../index.plain.html#91BF9E">#91BF9E</a>); pull the trailing hex.
+  const extractHex = (raw) => {
+    const m = (raw || '').trim().match(/#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i);
+    return m ? m[0] : null;
+  };
+
   const imageRow = rows.find((r) => r.querySelector('picture, img'));
-  const colourRow = rows.find((r) => HEX_RE.test(r.textContent.trim()));
-  const textRow = rows.find((r) => r.querySelector('a, ul')
-    || r.textContent.includes('|'));
-  // heading = first remaining non-empty row that isn't image/colour/text
+  // colour row = a short row whose visible text is just a hex code
+  const colourRow = rows.find((r) => r !== imageRow
+    && HEX_RE.test(r.textContent.trim()));
+  // text row = the rich body: it has a link, a promo-code pipe, or more than one
+  // paragraph. (EDS wraps the plain heading in a single <p>, so a bare
+  // "has a <p>" test would wrongly match the heading — hence the stricter test.)
+  const textRow = rows.find((r) => r !== imageRow && r !== colourRow
+    && (r.querySelector('a[href], ul')
+      || r.textContent.includes('|')
+      || r.querySelectorAll('p').length > 1));
+  // heading = first remaining non-empty row
   const used = new Set([imageRow, colourRow, textRow]);
   const headingRow = rows.find((r) => !used.has(r) && r.textContent.trim());
 
   // Background colour
-  const colour = colourRow?.textContent.trim();
-  if (colour && HEX_RE.test(colour)) block.style.setProperty('--tile-bg', colour);
+  const colour = extractHex(colourRow?.textContent);
+  if (colour) block.style.setProperty('--tile-bg', colour);
 
   // ---- Right: image ----
   const picture = imageRow?.querySelector('picture, img');
