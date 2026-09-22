@@ -149,8 +149,7 @@ export default function decorate(block) {
     body.append(...(inner ? inner.childNodes : textRow.childNodes));
 
     // Pull out trailing link-only paragraphs → CTA actions row.
-    // A paragraph whose only content is a single <a> is treated as a CTA:
-    // the first is the primary pill, the second the secondary text link.
+    // A paragraph whose only content is a single <a> is treated as a CTA.
     const ctaLinks = [];
     [...body.querySelectorAll(':scope > p')].forEach((p) => {
       const links = p.querySelectorAll('a');
@@ -167,8 +166,12 @@ export default function decorate(block) {
     if (ctaLinks.length) {
       const actions = document.createElement('div');
       actions.className = 'tile-actions';
-      ctaLinks.forEach((a, i) => {
-        a.className = i === 0 ? 'tile-cta' : 'tile-cta-secondary';
+      // A "Learn more" is always the secondary underlined link; any other CTA
+      // (e.g. "Get offer") is the primary pill. This keeps styling correct even
+      // when a tile has only a single "Learn more" link (tile 2).
+      const isSecondary = (a) => /learn more/i.test(a.textContent.trim());
+      ctaLinks.forEach((a) => {
+        a.className = isSecondary(a) ? 'tile-cta-secondary' : 'tile-cta';
         actions.append(a);
       });
       content.append(actions);
