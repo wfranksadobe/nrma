@@ -269,6 +269,34 @@ main > .section > .default-content-wrapper > * {
   margin-inline: auto;
 }
 
+/* Section intro title + lead — match the source: a Help Type Display heading
+   in navy, with a shorter grey lead paragraph beneath it (both centred). */
+main > .section > .default-content-wrapper h2 {
+  max-width: 15em;
+  margin: 0 auto;
+  font-family: 'Help Type Display Web', helvetica, arial, sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #010c66;
+}
+
+main > .section > .default-content-wrapper h2 + p {
+  max-width: 34em;
+  margin: 16px auto 0;
+  font-family: 'Help Type Text Web', helvetica, arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #4a4a4a;
+}
+
+@media (width <= 768px) {
+  main > .section > .default-content-wrapper h2 {
+    font-size: 30px;
+  }
+}
+
 main > .section > div {
   max-width: 1200px;
   margin: auto;

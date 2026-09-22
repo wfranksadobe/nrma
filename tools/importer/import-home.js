@@ -6,6 +6,7 @@ import heroParser from './parsers/hero.js';
 import cardsParser from './parsers/cards.js';
 import columnsParser from './parsers/columns.js';
 import promoParser from './parsers/promo.js';
+import infoCardParser from './parsers/info-card.js';
 
 // TRANSFORMER IMPORTS
 import cleanupTransformer from './transformers/nrma-cleanup.js';
@@ -17,6 +18,7 @@ const parsers = {
   cards: cardsParser,
   columns: columnsParser,
   promo: promoParser,
+  'info-card': infoCardParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION - embedded from page-templates.json

@@ -11,6 +11,8 @@
  * Handles four visual treatments robustly (promo sidekick, product grid, leaf callout, blog article).
  * Generated for NRMA homepage migration.
  */
+import { buildInfoCardBlock } from './info-card.js';
+
 export default function parse(element, { document }) {
   const fieldCell = (fieldName, ...nodes) => {
     const frag = document.createDocumentFragment();
@@ -21,19 +23,24 @@ export default function parse(element, { document }) {
 
   const textOf = (el) => (el ? el.textContent.replace(/\s+/g, ' ').trim() : '');
 
-  // --- 1. Collect candidate card items across the four treatments. ---
+  // --- 0. Product cards → Info Card blocks. ---
+  // The product-grid cards (Car & Vehicle / Home & Property / Business / Travel)
+  // are a distinct split-panel design, migrated to the dedicated Info Card block
+  // rather than the generic Cards block. Build them here and emit as section
+  // siblings (in document order) so the rest of the section still becomes a
+  // Cards block. A product card = a grid item with a product link-list + title.
+  const productItems = Array.from(element.querySelectorAll('.grid-container__item'))
+    .filter((item) => item.querySelector('.cmp-iag-list a[href]')
+      && item.querySelector('h2, h3, h4, .cmp-title__text'));
+  const infoCardBlocks = productItems.map((item) => buildInfoCardBlock(item, document));
+
+  // --- 1. Collect candidate card items across the remaining treatments. ---
   const candidates = [];
   const push = (nodes) => nodes.forEach((n) => { if (!candidates.includes(n)) candidates.push(n); });
 
   push(Array.from(element.querySelectorAll('.cmp-bento__sidekick')));            // promo offer cards
   push(Array.from(element.querySelectorAll('.cmp-article-preview-list__item'))); // blog cards
   push(Array.from(element.querySelectorAll('.cmp-call-out')));                   // why-choose callouts
-  // product cards: grid items carrying a product link-list + a heading
-  Array.from(element.querySelectorAll('.grid-container__item')).forEach((item) => {
-    if (item.querySelector('.cmp-iag-list a[href]') && item.querySelector('h2, h3, h4, .cmp-title__text')) {
-      push([item]);
-    }
-  });
 
   // Drop candidates nested inside another candidate (avoid double capture),
   // then restore source (document) order so cards read top-to-bottom as authored.
@@ -46,7 +53,7 @@ export default function parse(element, { document }) {
       return 0;
     });
 
-  if (!cards.length) {
+  if (!cards.length && !infoCardBlocks.length) {
     element.replaceWith(...element.childNodes);
     return;
   }
@@ -175,5 +182,10 @@ export default function parse(element, { document }) {
     }
   }
 
-  element.replaceWith(...introNodes, block);
+  // Emit: intro (title + lead) → Info Card blocks (product grid) → Cards block
+  // (remaining callouts/blog). Skip the Cards block if there were no non-product
+  // cards, so a pure product-grid section is just info cards.
+  const out = [...introNodes, ...infoCardBlocks];
+  if (cards.length) out.push(block);
+  element.replaceWith(...out);
 }

@@ -1,0 +1,165 @@
+/*
+ * Info Card block
+ * Two stacked panels: a coloured top (icon, title, body) and a white bottom
+ * (link list + CTA button). Rounded corners on the outer card; the split is
+ * seamless in the middle.
+ */
+
+.info-card {
+  --info-card-bg: #010c66;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 16px;
+  overflow: hidden;
+
+  /* match source: Help Type Text for body */
+  font-family: 'Help Type Text Web', helvetica, arial, sans-serif;
+  background-color: #fff;
+}
+
+/* ---- Coloured top panel ---- */
+.info-card .info-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+  padding: 32px 28px;
+  background-color: var(--info-card-bg);
+  color: #fff;
+}
+
+.info-card .info-card-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.info-card .info-card-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.info-card .info-card-title {
+  margin: 0;
+
+  /* match source card title: Help Type Display, 25px, medium */
+  font-family: 'Help Type Display Web', helvetica, arial, sans-serif;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: inherit;
+}
+
+.info-card .info-card-text {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.info-card .info-card-text p {
+  margin: 0;
+}
+
+/* ---- White bottom panel ---- */
+.info-card .info-card-bottom {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  box-sizing: border-box;
+  padding: 28px;
+  background-color: #fff;
+  color: #010c66;
+}
+
+.info-card .info-card-links ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.info-card .info-card-links li {
+  margin: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid #e7e2d8;
+}
+
+.info-card .info-card-links li:first-child {
+  padding-top: 0;
+}
+
+.info-card .info-card-links a:any-link {
+  font-size: 15px;
+  font-weight: 500;
+  color: #010c66;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.info-card .info-card-links a:hover {
+  text-decoration: none;
+}
+
+/* CTA — outlined navy pill, matching the source "See … insurance" button */
+.info-card .info-card-actions {
+  margin-top: auto;
+}
+
+.info-card .info-card-cta:any-link {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 12px 24px;
+  border: 1.5px solid #010c66;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #010c66;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.info-card .info-card-cta:hover {
+  background-color: #010c66;
+  color: #fff;
+}
+
+/*
+ * Section layout: the four Info Cards are direct section siblings (each in its
+ * own .info-card-wrapper). Lay them out as a 2-column grid on desktop, matching
+ * the source. Equal-height rows so paired cards align. The section intro
+ * (.default-content-wrapper) and any trailing cards block span the full width.
+ */
+@media (width >= 900px) {
+  .section.info-card-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+    box-sizing: border-box;
+    max-width: none;
+    padding-inline: max(32px, calc((100% - 1200px) / 2));
+  }
+
+  .section.info-card-container > .default-content-wrapper,
+  .section.info-card-container > .cards-wrapper {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+
+  .section.info-card-container > .info-card-wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+
+  .section.info-card-container > .info-card-wrapper > .info-card {
+    height: 100%;
+  }
+}

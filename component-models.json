@@ -314,6 +314,61 @@
     ]
   },
   {
+    "id": "info-card",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Icon / Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Title",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "description": "Body copy shown in the coloured top area, below the title.",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "backgroundColor",
+        "label": "Background Colour (hex)",
+        "description": "Hex colour for the coloured top area, e.g. #010C66",
+        "value": "#010C66"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "links",
+        "label": "White Panel Content",
+        "description": "Content for the white bottom panel — typically a list of links.",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "name": "cta",
+        "label": "CTA Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaText",
+        "label": "CTA Text",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "modal",
     "fields": [
       {
