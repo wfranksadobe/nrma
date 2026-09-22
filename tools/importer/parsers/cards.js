@@ -149,5 +149,31 @@ export default function parse(element, { document }) {
   });
 
   const block = WebImporter.Blocks.createBlock(document, { name: 'cards', cells });
-  element.replaceWith(block);
+
+  // --- 3. Preserve the section intro (title + lead paragraph). ---
+  // The section container often opens with a centred intro — a title and a short
+  // lead paragraph — that sits ABOVE the cards. It is not one of the card items,
+  // so without this it would be discarded when we replace the container. Emit it
+  // as default content before the block so it renders at the top of the section.
+  const outsideCards = (el) => el && !cards.some((c) => c.contains(el));
+  const introNodes = [];
+  // the intro title is the first .cmp-title__text that is NOT inside a card
+  // (product cards also use .cmp-title__text for their headings).
+  const titleEl = Array.from(element.querySelectorAll('.cmp-title__text'))
+    .find((t) => outsideCards(t) && textOf(t));
+  if (titleEl) {
+    const h = document.createElement('h2');
+    h.textContent = textOf(titleEl);
+    introNodes.push(h);
+
+    const lead = Array.from(element.querySelectorAll('.cmp-text p'))
+      .find((p) => outsideCards(p) && textOf(p));
+    if (lead) {
+      const p = document.createElement('p');
+      p.textContent = textOf(lead);
+      introNodes.push(p);
+    }
+  }
+
+  element.replaceWith(...introNodes, block);
 }

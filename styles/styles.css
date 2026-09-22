@@ -258,6 +258,17 @@ main > .section {
   margin: 40px 0;
 }
 
+/* Global rule: section content is centered. Default (non-block) content — the
+   section intro title + lead copy — is horizontally centred and text-centred,
+   matching the source. Blocks keep their own internal alignment. */
+main > .section > .default-content-wrapper {
+  text-align: center;
+}
+
+main > .section > .default-content-wrapper > * {
+  margin-inline: auto;
+}
+
 main > .section > div {
   max-width: 1200px;
   margin: auto;
