@@ -182,10 +182,31 @@ export default function parse(element, { document }) {
     }
   }
 
-  // Emit: intro (title + lead) → Info Card blocks (product grid) → Cards block
-  // (remaining callouts/blog). Skip the Cards block if there were no non-product
-  // cards, so a pure product-grid section is just info cards.
-  const out = [...introNodes, ...infoCardBlocks];
+  // --- 4. "Explore all products" link below the product grid. ---
+  // A section-level CTA (e.g. "Explore all products" → /insurance) sits beneath
+  // the product cards. It's not a card, so emit it as default content after the
+  // Info Card blocks. Match a .cmp-button outside all cards that isn't one of
+  // the cards' own "See … insurance" CTAs.
+  const afterNodes = [];
+  if (infoCardBlocks.length) {
+    // exclude CTAs inside the product cards (their "See … insurance" buttons)
+    const inProductCard = (el) => productItems.some((it) => it.contains(el));
+    const sectionCta = Array.from(element.querySelectorAll('a.cmp-button[href], .cmp-button a[href]'))
+      .find((a) => outsideCards(a) && !inProductCard(a) && textOf(a));
+    if (sectionCta) {
+      const p = document.createElement('p');
+      const a = document.createElement('a');
+      a.setAttribute('href', sectionCta.getAttribute('href'));
+      a.textContent = textOf(sectionCta);
+      p.appendChild(a);
+      afterNodes.push(p);
+    }
+  }
+
+  // Emit: intro (title + lead) → Info Card blocks (product grid) → section CTA
+  // → Cards block (remaining callouts/blog). Skip the Cards block if there were
+  // no non-product cards, so a pure product-grid section is just info cards.
+  const out = [...introNodes, ...infoCardBlocks, ...afterNodes];
   if (cards.length) out.push(block);
   element.replaceWith(...out);
 }
