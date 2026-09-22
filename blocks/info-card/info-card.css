@@ -135,31 +135,36 @@
  * (.default-content-wrapper) and any trailing cards block span the full width.
  */
 @media (width >= 900px) {
-  .section.info-card-container {
+  .section.section-colored.info-card-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
     align-items: stretch;
     box-sizing: border-box;
     max-width: none;
-    padding-inline: max(32px, calc((100% - 1200px) / 2));
+
+    /* cap the content at 1200px (same as section 1) via symmetric side padding;
+       the section itself stays full-bleed for its background */
+    padding-inline: max(40px, calc((100% - 1200px) / 2));
   }
 
-  .section.info-card-container > .default-content-wrapper,
-  .section.info-card-container > .cards-wrapper {
+  .section.section-colored.info-card-container > .default-content-wrapper,
+  .section.section-colored.info-card-container > .cards-wrapper {
     grid-column: 1 / -1;
     width: 100%;
     max-width: none;
     margin: 0;
+    padding: 0;
   }
 
-  .section.info-card-container > .info-card-wrapper {
+  .section.section-colored.info-card-container > .info-card-wrapper {
     width: 100%;
     max-width: none;
     margin: 0;
+    padding: 0;
   }
 
-  .section.info-card-container > .info-card-wrapper > .info-card {
+  .section.section-colored.info-card-container > .info-card-wrapper > .info-card {
     height: 100%;
   }
 }
