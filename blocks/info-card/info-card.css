@@ -137,6 +137,37 @@
 }
 
 /*
+ * Section CTA — the "Explore all products" link below the product grid. It is
+ * default content (a decorated .button in a .button-container), so override the
+ * boilerplate solid-blue button with the source's centred outlined navy pill,
+ * matching the info-card "See … insurance" CTAs.
+ */
+.section.info-card-container .button-container {
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.section.info-card-container a.button:any-link {
+  margin: 0;
+  padding: 12px 28px;
+  border: 1.5px solid #010c66;
+  border-radius: 999px;
+  font-family: 'Help Type Text Web', helvetica, arial, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #010c66;
+  background-color: transparent;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.section.info-card-container a.button:hover,
+.section.info-card-container a.button:focus {
+  background-color: #010c66;
+  color: #fff;
+}
+
+/*
  * Section layout: the four Info Cards are direct section siblings (each in its
  * own .info-card-wrapper). Lay them out as a 2-column grid on desktop, matching
  * the source. Equal-height rows so paired cards align. The section intro
