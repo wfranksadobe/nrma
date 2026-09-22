@@ -107,10 +107,17 @@ function a11yLinks(main) {
  * @param {Element} main
  */
 function decorateSectionBackgrounds(main) {
-  const isHex = (v) => /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(v);
+  // Extract a #RGB / #RRGGBB hex from the value. AEM can deliver the hex as a
+  // URL fragment (e.g. ".../index.plain.html#010C66") because the "#010C66"
+  // metadata value is auto-linked; grab the trailing hex in that case.
+  const extractHex = (raw) => {
+    const v = (raw || '').trim();
+    const m = v.match(/#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i);
+    return m ? m[0] : null;
+  };
   main.querySelectorAll(':scope > .section[data-background]').forEach((section) => {
-    const colour = (section.dataset.background || '').trim();
-    if (isHex(colour)) {
+    const colour = extractHex(section.dataset.background);
+    if (colour) {
       section.style.setProperty('--section-bg', colour);
       section.classList.add('section-colored');
     }
