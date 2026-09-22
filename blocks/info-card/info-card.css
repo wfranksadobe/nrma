@@ -9,8 +9,10 @@
   --info-card-bg: #010c66;
   --info-card-content: #fff;
 
-  display: flex;
-  flex-direction: column;
+  /* two equal-height rows: the coloured top and the white bottom always match
+     in height (grid sizes both 1fr rows to the taller panel's content) */
+  display: grid;
+  grid-template-rows: 1fr 1fr;
   height: 100%;
   box-sizing: border-box;
   border-radius: 16px;
@@ -75,7 +77,6 @@
 /* ---- White bottom panel ---- */
 .info-card .info-card-bottom {
   display: flex;
-  flex: 1 1 auto;
   flex-direction: column;
   justify-content: space-between;
   gap: 32px;
