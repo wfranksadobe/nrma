@@ -259,7 +259,7 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1320px;
+  max-width: 1200px;
   margin: auto;
   padding: 0 24px;
 }
@@ -300,7 +300,7 @@ main > .section.section-colored {
 /* full-bleed background: cancel the boilerplate content max-width gutter so the
    colour spans the viewport; inner content keeps its own max-width */
 main > .section.section-colored > div {
-  max-width: 1320px;
+  max-width: 1200px;
   margin: auto;
 }
 
