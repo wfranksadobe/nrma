@@ -150,47 +150,56 @@ export default function parse(element, { document }) {
     const primaryBtn = buttons.find((a) => !isLinkStyle(a)) || null;
     const secondaryBtn = buttons.find((a) => isLinkStyle(a) && a !== primaryBtn) || null;
 
-    const primaryText = textOf(primaryBtn);
-    const primaryHref = primaryBtn ? (primaryBtn.getAttribute('href') || '#') : '#';
-    const secondaryText = textOf(secondaryBtn);
-    const secondaryHref = secondaryBtn ? (secondaryBtn.getAttribute('href') || '#') : '#';
+    // Fold the CTAs into the rich text field as link paragraphs — the primary
+    // (button) then the secondary (text link). Keeping links inside richtext
+    // (like the Promo block) means they survive the XWALK/JCR round-trip;
+    // separate aem-content link fields shift/mangle the block on conversion.
+    if (primaryBtn) {
+      const p = document.createElement('p');
+      const a = document.createElement('a');
+      a.setAttribute('href', primaryBtn.getAttribute('href') || '#');
+      a.textContent = textOf(primaryBtn) || 'Get offer';
+      p.appendChild(a);
+      textNodes.push(p);
+    }
+    if (secondaryBtn) {
+      const p = document.createElement('p');
+      const a = document.createElement('a');
+      a.setAttribute('href', secondaryBtn.getAttribute('href') || '#');
+      a.textContent = textOf(secondaryBtn) || 'Learn more';
+      p.appendChild(a);
+      textNodes.push(p);
+    }
 
-    // image
+    // image — derive a non-empty alt (an empty cell collapses the row and
+    // shifts the backgroundColor field during md2jcr conversion).
     const imgs = Array.from(card.querySelectorAll('img'));
     const image = imgs.find((i) => i.getAttribute('src') && !i.getAttribute('src').startsWith('data:')) || imgs[0] || null;
-    if (image && !image.getAttribute('alt')) image.setAttribute('alt', '');
-    const imageAlt = image ? (image.getAttribute('alt') || '') : '';
+    const imageAlt = (image && image.getAttribute('alt')) ? image.getAttribute('alt') : heading;
+    if (image) image.setAttribute('alt', imageAlt);
 
-    const primaryLink = document.createElement('a');
-    primaryLink.setAttribute('href', primaryHref);
-    primaryLink.textContent = primaryHref;
-    const secondaryLink = document.createElement('a');
-    secondaryLink.setAttribute('href', secondaryHref);
-    secondaryLink.textContent = secondaryHref;
-
+    // Cells mirror the working nav-promo block exactly: image first (its alt
+    // attribute auto-fills the adjacent imageAlt field, so no separate alt
+    // row), then the simple text fields, then the richtext `text` last. Model
+    // field order: image, imageAlt, heading, backgroundColor, text.
     const cells = [
-      [heading],
-      [fieldCell('text', ...textNodes)],
-      [primaryText],
-      [primaryText ? primaryLink : ''],
-      [secondaryText],
-      [secondaryText ? secondaryLink : ''],
       [image ? fieldCell('image', image) : ''],
-      [imageAlt],
+      [heading],
       [bgForCard(card)],
+      [fieldCell('text', ...textNodes)],
     ];
     return WebImporter.Blocks.createBlock(document, { name: 'tile', cells });
   });
 
-  // Stack the two tiles vertically in the right column.
-  const rightCol = document.createElement('div');
-  tileBlocks.forEach((t) => rightCol.appendChild(t));
+  // Emit Promo + the two Tiles as sibling top-level blocks (NOT wrapped in a
+  // Columns block). A Columns block can only contain text/image/button/title in
+  // XWALK, so nesting custom blocks inside it does not survive the JCR
+  // round-trip (md2jcr flattens the nested tables into a huge column grid). As
+  // siblings each is a proper top-level block that AEM decorates; the 2-column
+  // layout is done purely in CSS (see the .promo-container section rules).
+  const frag = document.createElement('div');
+  frag.appendChild(promoBlock);
+  tileBlocks.forEach((t) => frag.appendChild(t));
 
-  // ---------- WRAP: columns block [ promo | tiles ] ----------
-  const columns = WebImporter.Blocks.createBlock(document, {
-    name: 'columns',
-    cells: [[promoBlock, rightCol]],
-  });
-
-  element.replaceWith(columns);
+  element.replaceWith(...frag.childNodes);
 }

@@ -175,32 +175,3 @@
   }
 }
 
-/*
- * Two tiles stacked in a columns cell (homepage top section RHS). The RHS
- * column matches the LHS promo panel's height exactly: the LHS drives the row
- * height (the tiles use flex-basis 0 so they contribute ~no intrinsic height),
- * and the two tiles split the available height equally — so combined tiles +
- * gap == LHS height, without changing the LHS.
- */
-@media (width >= 900px) {
-  .columns > div:has(.tile-wrapper) {
-    align-items: stretch;
-  }
-
-  .columns > div > div:has(> .tile-wrapper) {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .columns > div > div > .tile-wrapper {
-    display: flex;
-    flex: 1 1 0;
-    min-height: 0;
-  }
-
-  .columns > div > div > .tile-wrapper > .tile {
-    flex: 1;
-    min-height: 0;
-  }
-}

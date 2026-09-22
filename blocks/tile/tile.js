@@ -1,10 +1,13 @@
 /*
  * Tile block
- * A promotional tile: content on the left (heading, text, CTA) and an image
- * occupying the right ~34% of the tile. The whole tile has a hex background.
+ * A promotional tile: content on the left (heading, text, CTAs) and an image
+ * on the right. The whole tile has a hex background.
  *
- * Fields (row order): heading, text (rich), ctaText, ctaLink, image, imageAlt,
- * backgroundColor.
+ * Fields (row order): image, imageAlt, heading, backgroundColor, text (rich).
+ *
+ * The CTAs live inside the rich text as trailing link-only paragraphs: the
+ * first becomes the primary pill button, a second becomes the secondary text
+ * link. (Keeping links in richtext is what survives the XWALK/JCR round-trip.)
  *
  * Promo-code chip: within the text, any value wrapped in pipes — e.g. |150CAR| —
  * renders as a one-click "copy" chip. Clicking it copies the code (150CAR) to
@@ -90,29 +93,27 @@ function decoratePromoCodes(root) {
 }
 
 export default function decorate(block) {
+  // Identify rows by content, not position — the row count differs between the
+  // local plain.html (imageAlt folded onto the <img>) and the AEM/JCR render
+  // (imageAlt as its own row). Robust to both.
   const rows = [...block.children];
-  const [
-    headingRow, textRow, ctaTextRow, ctaLinkRow,
-    secondaryTextRow, secondaryLinkRow, imageRow, imageAltRow, colourRow,
-  ] = rows;
+  const imageRow = rows.find((r) => r.querySelector('picture, img'));
+  const colourRow = rows.find((r) => HEX_RE.test(r.textContent.trim()));
+  const textRow = rows.find((r) => r.querySelector('a, ul')
+    || r.textContent.includes('|'));
+  // heading = first remaining non-empty row that isn't image/colour/text
+  const used = new Set([imageRow, colourRow, textRow]);
+  const headingRow = rows.find((r) => !used.has(r) && r.textContent.trim());
 
   // Background colour
   const colour = colourRow?.textContent.trim();
   if (colour && HEX_RE.test(colour)) block.style.setProperty('--tile-bg', colour);
-  colourRow?.remove();
 
   // ---- Right: image ----
   const picture = imageRow?.querySelector('picture, img');
-  const alt = imageAltRow?.textContent.trim();
   const media = document.createElement('div');
   media.className = 'tile-media';
-  if (picture) {
-    const img = picture.tagName === 'IMG' ? picture : picture.querySelector('img');
-    if (img && alt) img.setAttribute('alt', alt);
-    media.append(picture);
-  }
-  imageRow?.remove();
-  imageAltRow?.remove();
+  if (picture) media.append(picture);
 
   // ---- Left: content ----
   const content = document.createElement('div');
@@ -131,41 +132,33 @@ export default function decorate(block) {
     body.className = 'tile-text';
     const inner = textRow.firstElementChild;
     body.append(...(inner ? inner.childNodes : textRow.childNodes));
+
+    // Pull out trailing link-only paragraphs → CTA actions row.
+    // A paragraph whose only content is a single <a> is treated as a CTA:
+    // the first is the primary pill, the second the secondary text link.
+    const ctaLinks = [];
+    [...body.querySelectorAll(':scope > p')].forEach((p) => {
+      const links = p.querySelectorAll('a');
+      const onlyLink = links.length === 1 && p.textContent.trim() === links[0].textContent.trim();
+      if (onlyLink) {
+        ctaLinks.push(links[0]);
+        p.remove();
+      }
+    });
+
     decoratePromoCodes(body);
     content.append(body);
-  }
 
-  // CTA row: primary pill + optional secondary text link
-  const ctaText = ctaTextRow?.textContent.trim();
-  const ctaLink = ctaLinkRow?.querySelector('a')?.getAttribute('href')
-    || ctaLinkRow?.textContent.trim();
-  const secondaryText = secondaryTextRow?.textContent.trim();
-  const secondaryLink = secondaryLinkRow?.querySelector('a')?.getAttribute('href')
-    || secondaryLinkRow?.textContent.trim();
-
-  if (ctaText || secondaryText) {
-    const actions = document.createElement('div');
-    actions.className = 'tile-actions';
-    if (ctaText) {
-      const cta = document.createElement('a');
-      cta.className = 'tile-cta';
-      cta.textContent = ctaText;
-      if (ctaLink) cta.setAttribute('href', ctaLink);
-      actions.append(cta);
+    if (ctaLinks.length) {
+      const actions = document.createElement('div');
+      actions.className = 'tile-actions';
+      ctaLinks.forEach((a, i) => {
+        a.className = i === 0 ? 'tile-cta' : 'tile-cta-secondary';
+        actions.append(a);
+      });
+      content.append(actions);
     }
-    if (secondaryText) {
-      const sec = document.createElement('a');
-      sec.className = 'tile-cta-secondary';
-      sec.textContent = secondaryText;
-      if (secondaryLink) sec.setAttribute('href', secondaryLink);
-      actions.append(sec);
-    }
-    content.append(actions);
   }
-  ctaTextRow?.remove();
-  ctaLinkRow?.remove();
-  secondaryTextRow?.remove();
-  secondaryLinkRow?.remove();
 
   // Rebuild the block: content (left) + media (right)
   block.replaceChildren(content, media);

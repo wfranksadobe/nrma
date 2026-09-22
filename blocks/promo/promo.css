@@ -111,3 +111,43 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/*
+ * Homepage top section: a Promo block + two Tile blocks are direct section
+ * siblings (they are NOT wrapped in a Columns block — that doesn't survive the
+ * XWALK/JCR round-trip). Lay them out as two columns: the Promo fills the left
+ * column and spans both rows; the two Tiles stack in the right column.
+ */
+@media (width >= 900px) {
+  .section.promo-container.tile-container > .default-content-wrapper,
+  .section.promo-container.tile-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 1fr;
+    gap: 24px;
+    align-items: stretch;
+    max-width: 1200px;
+    margin-inline: auto;
+  }
+
+  /* Promo: left column, spans both tile rows */
+  .section.promo-container.tile-container > .promo-wrapper {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .section.promo-container.tile-container > .tile-wrapper {
+    grid-column: 2;
+  }
+
+  .section.promo-container.tile-container > .promo-wrapper,
+  .section.promo-container.tile-container > .tile-wrapper {
+    margin: 0;
+  }
+
+  /* make the blocks fill their grid cells */
+  .section.promo-container.tile-container > .promo-wrapper > .promo,
+  .section.promo-container.tile-container > .tile-wrapper > .tile {
+    height: 100%;
+  }
+}
