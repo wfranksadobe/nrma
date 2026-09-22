@@ -56,6 +56,14 @@ export function buildInfoCardBlock(element, document) {
     return '#010C66';
   };
 
+  // Content (icon + text) colour: white on the dark navy card, navy on the
+  // lighter (lime/sage/coral) cards so it stays legible.
+  const contentColorFor = (item) => {
+    const bg = item.querySelector('.flexlayoutitem[class*="bg-"]');
+    const cls = bg ? bg.className : '';
+    return /bg-primary/.test(cls) ? '#FFFFFF' : '#010C66';
+  };
+
   const title = textOf(element.querySelector('.cmp-title__text'));
   const token = iconToken(element);
 
@@ -105,12 +113,13 @@ export function buildInfoCardBlock(element, document) {
   }
 
   // One cell per model field GROUP (md2jcr maps one row per group):
-  //   image, title, text, backgroundColor, links, cta (+ctaText collapses in)
+  //   image, title, text, backgroundColor, contentColor, links, cta (+ctaText)
   const cells = [
     [token ? fieldCell('image', iconP) : ''],
     [fieldCell('title', mkP(title))],
     [fieldCell('text', ...descNodes)],
     [fieldCell('backgroundColor', mkP(bgFor(element)))],
+    [fieldCell('contentColor', mkP(contentColorFor(element)))],
     [fieldCell('links', ...linkNodes)],
     [ctaHref ? fieldCell('cta', ctaP) : ''],
   ];

@@ -51,6 +51,14 @@
           "value": "#010C66"
         },
         {
+          "component": "text",
+          "valueType": "string",
+          "name": "contentColor",
+          "label": "Content Colour (hex)",
+          "description": "Hex colour for the icon and text in the coloured top area, e.g. #FFFFFF on a dark background or #010C66 on a light one",
+          "value": "#FFFFFF"
+        },
+        {
           "component": "richtext",
           "valueType": "string",
           "name": "links",

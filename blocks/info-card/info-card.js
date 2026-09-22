@@ -4,11 +4,14 @@
  *   - a COLOURED top panel: icon, title, body text (on a hex background)
  *   - a WHITE bottom panel: rich text (typically a list of links) + a CTA button
  *
- * Model field groups (row order): image, title, text, backgroundColor, links, cta.
+ * Model field groups (row order): image, title, text, backgroundColor,
+ * contentColor, links, cta.
  *
  * The icon is delivered as an :token: (localhost) or a span.icon.icon-<token>
- * (EDS/DA); it maps to a white SVG in /icons. Rows are identified by CONTENT so
- * this is robust to both the local plain.html and the AEM/JCR render.
+ * (EDS/DA); it maps to a white SVG in /icons. It's painted with the authored
+ * Content Colour via a CSS mask, so a single icon asset works on any background.
+ * Rows are identified by CONTENT so this is robust to both the local plain.html
+ * and the AEM/JCR render.
  */
 
 const HEX_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -16,7 +19,9 @@ const TOKEN_RE = /^:([A-Za-z0-9_-]+):$/;
 
 /**
  * Resolve the card icon from a row: either raw ":token:" text (localhost) or a
- * pre-decorated span.icon.icon-<token> (EDS/DA). Returns an <img> or null.
+ * pre-decorated span.icon.icon-<token> (EDS/DA). Returns a mask-painted <span>
+ * whose colour follows the top panel's `color` (the authored Content Colour),
+ * so a single icon asset works on any background. Null if no token.
  */
 function resolveIcon(row) {
   const base = window.hlx && window.hlx.codeBasePath ? window.hlx.codeBasePath : '';
@@ -33,11 +38,12 @@ function resolveIcon(row) {
     if (m) [, token] = m;
   }
   if (!token) return null;
-  const img = document.createElement('img');
-  img.src = `${base}/icons/${token}.svg`;
-  img.alt = '';
-  img.loading = 'lazy';
-  return img;
+  const glyph = document.createElement('span');
+  glyph.className = 'info-card-glyph';
+  const url = `url("${base}/icons/${token}.svg")`;
+  glyph.style.webkitMaskImage = url;
+  glyph.style.maskImage = url;
+  return glyph;
 }
 
 export default function decorate(block) {
@@ -52,22 +58,26 @@ export default function decorate(block) {
 
   // icon row = raw :token: text or a decorated span.icon
   const iconRow = rows.find(isIconRow);
-  // colour row = a short row whose visible text is just a hex code
-  const colourRow = rows.find((r) => r !== iconRow && HEX_RE.test(r.textContent.trim()));
+  // colour rows = short rows whose visible text is just a hex code. In document
+  // order these are backgroundColor then contentColor (per the model/parser).
+  const colourRows = rows.filter((r) => r !== iconRow && HEX_RE.test(r.textContent.trim()));
+  const [bgRow, contentRow] = colourRows;
   // links row = the rich body carrying the link LIST (white panel)
-  const listRow = rows.find((r) => r !== iconRow && r !== colourRow && r.querySelector('ul'));
+  const listRow = rows.find((r) => !colourRows.includes(r) && r !== iconRow && r.querySelector('ul'));
   // cta row = a standalone link, not inside a list
-  const ctaRow = rows.find((r) => r !== iconRow && r !== colourRow && r !== listRow
+  const ctaRow = rows.find((r) => !colourRows.includes(r) && r !== iconRow && r !== listRow
     && r.querySelector('a[href]') && !r.querySelector('ul'));
 
-  const used = new Set([iconRow, colourRow, listRow, ctaRow]);
+  const used = new Set([iconRow, ...colourRows, listRow, ctaRow]);
   const remaining = rows.filter((r) => !used.has(r) && r.textContent.trim());
   // title = first remaining text row; text = the next remaining rich row
   const titleRow = remaining[0] || null;
   const textRow = remaining[1] || null;
 
-  const colour = extractHex(colourRow?.textContent);
-  if (colour) block.style.setProperty('--info-card-bg', colour);
+  const bg = extractHex(bgRow?.textContent);
+  if (bg) block.style.setProperty('--info-card-bg', bg);
+  const contentColour = extractHex(contentRow?.textContent);
+  if (contentColour) block.style.setProperty('--info-card-content', contentColour);
 
   // ---- Coloured top panel ----
   const top = document.createElement('div');

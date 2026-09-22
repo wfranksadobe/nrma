@@ -7,6 +7,7 @@
 
 .info-card {
   --info-card-bg: #010c66;
+  --info-card-content: #fff;
 
   display: flex;
   flex-direction: column;
@@ -28,7 +29,9 @@
   box-sizing: border-box;
   padding: 32px 28px;
   background-color: var(--info-card-bg);
-  color: #fff;
+
+  /* icon + text follow the authored Content Colour */
+  color: var(--info-card-content);
 }
 
 .info-card .info-card-icon {
@@ -36,11 +39,16 @@
   height: 48px;
 }
 
-.info-card .info-card-icon img {
+/* the glyph is a white SVG painted with the Content Colour via a CSS mask, so a
+   single icon asset works on any background */
+.info-card .info-card-glyph {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  background-color: currentcolor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
 
 .info-card .info-card-title {
