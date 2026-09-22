@@ -223,9 +223,11 @@ export default function parse(element, { document }) {
   }
 
   // Emit: intro (title + lead) → Info Card blocks (product grid) → section CTA
-  // → FAQ block (existing customers) → Cards block (remaining callouts/blog).
-  // Skip the Cards block if there were no non-product cards.
+  // → FAQ block (existing customers). In the product section the FAQ is the last
+  // element — the trailing "why choose" callouts are intentionally dropped, so
+  // the generic Cards block is only emitted when this ISN'T the product section
+  // (e.g. the blog section).
   const out = [...introNodes, ...infoCardBlocks, ...afterNodes, ...faqBlocks];
-  if (cards.length) out.push(block);
+  if (cards.length && !infoCardBlocks.length) out.push(block);
   element.replaceWith(...out);
 }

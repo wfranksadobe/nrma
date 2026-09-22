@@ -188,12 +188,24 @@
   }
 
   .section.section-colored.info-card-container > .default-content-wrapper,
+  .section.section-colored.info-card-container > .faq-wrapper,
   .section.section-colored.info-card-container > .cards-wrapper {
     grid-column: 1 / -1;
     width: 100%;
     max-width: none;
     margin: 0;
     padding: 0;
+  }
+
+  /* generous breathing room around the "Explore all products" CTA: more space
+     above it (after the cards) and below it (before the FAQ block) */
+  .section.section-colored.info-card-container > .default-content-wrapper:has(a.button) {
+    margin-block: 32px;
+  }
+
+  /* space above the FAQ block */
+  .section.section-colored.info-card-container > .faq-wrapper {
+    margin-top: 40px;
   }
 
   .section.section-colored.info-card-container > .info-card-wrapper {
