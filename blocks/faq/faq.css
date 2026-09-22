@@ -12,7 +12,7 @@
   box-sizing: border-box;
 
   /* inner left/right padding + breathing room below the block */
-  padding: 0 24px 48px;
+  padding: 0 48px 48px;
 
   /* match source: Help Type for headings/body */
   font-family: 'Help Type Text Web', helvetica, arial, sans-serif;
@@ -23,7 +23,7 @@
     grid-template-columns: 5fr 7fr;
     gap: 64px;
     align-items: start;
-    padding: 0 40px 64px;
+    padding: 0 80px 64px;
   }
 }
 
