@@ -7,6 +7,7 @@ import cardsParser from './parsers/cards.js';
 import columnsParser from './parsers/columns.js';
 import promoParser from './parsers/promo.js';
 import infoCardParser from './parsers/info-card.js';
+import faqParser from './parsers/faq.js';
 
 // TRANSFORMER IMPORTS
 import cleanupTransformer from './transformers/nrma-cleanup.js';
@@ -19,6 +20,7 @@ const parsers = {
   columns: columnsParser,
   promo: promoParser,
   'info-card': infoCardParser,
+  faq: faqParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION - embedded from page-templates.json

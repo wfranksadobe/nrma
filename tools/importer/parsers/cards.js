@@ -12,6 +12,7 @@
  * Generated for NRMA homepage migration.
  */
 import { buildInfoCardBlock } from './info-card.js';
+import { buildFaqBlock } from './faq.js';
 
 export default function parse(element, { document }) {
   const fieldCell = (fieldName, ...nodes) => {
@@ -203,10 +204,28 @@ export default function parse(element, { document }) {
     }
   }
 
+  // --- 5. "Existing customers" strip → FAQ block. ---
+  // The "Already have a policy with us?" strip (pill + title + link boxes) sits
+  // below the product grid. Build it as an FAQ block and emit after the section
+  // CTA. Its title's grid-container is the scope holding the badge/icon/links.
+  const faqBlocks = [];
+  const faqTitle = Array.from(element.querySelectorAll('.cmp-title__text'))
+    .find((t) => /already have a policy/i.test(t.textContent));
+  if (faqTitle) {
+    let scope = faqTitle;
+    while (scope && scope !== element && !/renew your policy/i.test(scope.textContent)) {
+      scope = scope.parentElement;
+    }
+    if (scope) {
+      const faq = buildFaqBlock(faqTitle, scope, document);
+      if (faq) faqBlocks.push(faq);
+    }
+  }
+
   // Emit: intro (title + lead) → Info Card blocks (product grid) → section CTA
-  // → Cards block (remaining callouts/blog). Skip the Cards block if there were
-  // no non-product cards, so a pure product-grid section is just info cards.
-  const out = [...introNodes, ...infoCardBlocks, ...afterNodes];
+  // → FAQ block (existing customers) → Cards block (remaining callouts/blog).
+  // Skip the Cards block if there were no non-product cards.
+  const out = [...introNodes, ...infoCardBlocks, ...afterNodes, ...faqBlocks];
   if (cards.length) out.push(block);
   element.replaceWith(...out);
 }

@@ -262,6 +262,41 @@
     ]
   },
   {
+    "id": "faq",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Icon / Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tag",
+        "label": "Tag Text",
+        "description": "Small pill label shown beside the icon, e.g. \"Existing customers\".",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Title",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "description": "Body content. A bullet/link list renders as the row of chevron link boxes on the right.",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "form",
     "fields": [
       {

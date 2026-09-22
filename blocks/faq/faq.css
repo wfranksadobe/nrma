@@ -1,0 +1,124 @@
+/*
+ * FAQ block
+ * Left: a pill (icon + tag) over a large title. Right: a stacked list of
+ * light-lavender link boxes, each with a trailing chevron. Two columns on
+ * desktop, stacked on mobile.
+ */
+
+.faq {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  box-sizing: border-box;
+
+  /* match source: Help Type for headings/body */
+  font-family: 'Help Type Text Web', helvetica, arial, sans-serif;
+}
+
+@media (width >= 900px) {
+  .faq {
+    grid-template-columns: 5fr 7fr;
+    gap: 64px;
+    align-items: start;
+  }
+}
+
+/* ---- Left: pill + title ---- */
+.faq .faq-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.faq .faq-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: start;
+  box-sizing: border-box;
+  padding: 8px 16px;
+  border: 1px solid #d7d2c8;
+  border-radius: 999px;
+  background-color: #fff;
+}
+
+.faq .faq-pill-icon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+}
+
+.faq .faq-pill-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.faq .faq-pill-tag {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: #010c66;
+}
+
+.faq .faq-title {
+  margin: 0;
+
+  /* match source title: Help Type Display, large, medium */
+  font-family: 'Help Type Display Web', helvetica, arial, sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: #010c66;
+}
+
+/* ---- Right: chevron link boxes ---- */
+.faq .faq-links ul {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.faq .faq-links li {
+  margin: 0;
+}
+
+.faq .faq-links a:any-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-sizing: border-box;
+  padding: 24px 28px;
+  border-radius: 12px;
+  background-color: #d7d8ea;
+  font-size: 18px;
+  font-weight: 500;
+  color: #010c66;
+  text-decoration: none;
+}
+
+/* trailing chevron */
+.faq .faq-links a::after {
+  content: '';
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border-top: 2px solid #010c66;
+  border-right: 2px solid #010c66;
+  transform: rotate(45deg);
+}
+
+.faq .faq-links a:hover {
+  background-color: #c9cbe4;
+}
+
+@media (width <= 768px) {
+  .faq .faq-title {
+    font-size: 30px;
+  }
+}
