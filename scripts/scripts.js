@@ -238,10 +238,13 @@ let alloyLoadedPromise = initWebSDK('./alloy.js', {
     datastreamId: '43e2ebdd-40fc-405e-8cdf-3ceeb90e7725',
     orgId: '3836FBBE59C906A30A495E06@AdobeOrg',
   });;
+ 
+/** 
 if (getMetadata('target')) {
   alloyLoadedPromise.then(() => getAndApplyRenderDecisions());
 }
-
+*/
+alloyLoadedPromise.then(() => getAndApplyRenderDecisions());
 
 
 
